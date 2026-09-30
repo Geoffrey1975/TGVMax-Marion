@@ -1,15 +1,17 @@
-TGV Max Marion — v4
+TGV Max Marion — v5
 
-Modifications :
-- Saint-Étienne ↔ Paris : filtre MAX rendu plus robuste (recherche textuelle souple sur ETIENNE / PARIS).
-- Paris ↔ Lyon : même principe robuste.
-- Saint-Étienne ↔ Lyon et Lyon ↔ Saint-Étienne :
-  ces boutons n'attendent plus des disponibilités MAX et ouvrent directement SNCF Connect.
-  SNCF Connect propose alors les trains de la relation, vers/depuis Lyon Part-Dieu ou Lyon Perrache
-  selon les horaires disponibles.
-- La recherche par date porte sur les 4 relations MAX :
-  Saint-Étienne ↔ Paris et Lyon ↔ Paris.
+Nouveautés :
+- Pour chaque train MAX disponible :
+  * bouton « Réserver avec MAX JEUNE » vers l’espace officiel MAX JEUNE SNCF Connect ;
+  * bouton « Alerte / Réservation auto MAX » vers la page SNCF décrivant ces deux outils.
+- Les trains MAX restent affichés avec date, horaires et numéro exact.
+- Saint-Étienne ↔ Lyon reste en réservation SNCF classique (TER / TGV selon offre).
 - Fond violon responsive conservé.
+
+Limite SNCF :
+SNCF Connect ne fournit pas de lien public stable permettant à un site externe de préremplir
+simultanément profil MAX JEUNE + trajet + date + numéro de train. La réservation finale doit
+donc être confirmée dans SNCF Connect avec le profil MAX enregistré.
 
 Mise à jour GitHub Pages :
 remplacer tous les fichiers du dépôt par ceux de cette archive puis Commit changes.
