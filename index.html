@@ -146,6 +146,15 @@
       }
     }
 
+  
+    .classic-route{
+      cursor:pointer;
+    }
+    .classic-route:hover{
+      border-color:#bbb;
+      transform:translateY(-1px);
+    }
+
   </style>
 </head>
 <body>
@@ -158,7 +167,7 @@
 
 <main class="wrap">
   <section id="home" class="home">
-    <p class="intro">Choisis un trajet : les places MAX disponibles apparaissent immédiatement, de la date la plus proche à la plus éloignée.</p>
+    <p class="intro">Choisis un trajet MAX pour afficher les places à 0 € par ordre chronologique. Les boutons Saint‑Étienne ↔ Lyon ouvrent directement SNCF Connect, avec les trains vers Lyon Part‑Dieu ou Perrache.</p>
     <div class="routes" id="routeButtons"></div>
     <div id="homeStatus" class="home-status">Comptage des disponibilités en cours…</div>
     <p class="note">
@@ -200,18 +209,28 @@
 const API = "https://ressources.data.sncf.com/api/explore/v2.1/catalog/datasets/tgvmax/records";
 
 const ROUTES = [
-  {id:"ste-par", from:"ST ETIENNE CHATEAUCREUX", to:"PARIS (intramuros)",
-   labelFrom:"Saint-Étienne", labelTo:"Paris", booking:"https://www.sncf-connect.com/train/trajet/saint-etienne/paris"},
-  {id:"par-ste", from:"PARIS (intramuros)", to:"ST ETIENNE CHATEAUCREUX",
-   labelFrom:"Paris", labelTo:"Saint-Étienne", booking:"https://www.sncf-connect.com/train/trajet/paris/saint-etienne"},
-  {id:"lyo-par", from:"LYON (intramuros)", to:"PARIS (intramuros)",
-   labelFrom:"Lyon", labelTo:"Paris", booking:"https://www.sncf-connect.com/train/trajet/lyon/paris"},
-  {id:"par-lyo", from:"PARIS (intramuros)", to:"LYON (intramuros)",
-   labelFrom:"Paris", labelTo:"Lyon", booking:"https://www.sncf-connect.com/train/trajet/paris/lyon"},
-  {id:"ste-lyo", from:"ST ETIENNE CHATEAUCREUX", to:"LYON (intramuros)",
-   labelFrom:"Saint-Étienne", labelTo:"Lyon", booking:"https://www.sncf-connect.com/train/trajet/saint-etienne/lyon"},
-  {id:"lyo-ste", from:"LYON (intramuros)", to:"ST ETIENNE CHATEAUCREUX",
-   labelFrom:"Lyon", labelTo:"Saint-Étienne", booking:"https://www.sncf-connect.com/train/trajet/lyon/saint-etienne"}
+  {id:"ste-par", type:"max",
+   fromSearch:"ETIENNE", toSearch:"PARIS",
+   labelFrom:"Saint-Étienne", labelTo:"Paris",
+   booking:"https://www.sncf-connect.com/train/trajet/saint-etienne/paris"},
+  {id:"par-ste", type:"max",
+   fromSearch:"PARIS", toSearch:"ETIENNE",
+   labelFrom:"Paris", labelTo:"Saint-Étienne",
+   booking:"https://www.sncf-connect.com/train/trajet/paris/saint-etienne"},
+  {id:"lyo-par", type:"max",
+   fromSearch:"LYON", toSearch:"PARIS",
+   labelFrom:"Lyon", labelTo:"Paris",
+   booking:"https://www.sncf-connect.com/train/trajet/lyon/paris"},
+  {id:"par-lyo", type:"max",
+   fromSearch:"PARIS", toSearch:"LYON",
+   labelFrom:"Paris", labelTo:"Lyon",
+   booking:"https://www.sncf-connect.com/train/trajet/paris/lyon"},
+  {id:"ste-lyo", type:"booking",
+   labelFrom:"Saint-Étienne", labelTo:"Lyon",
+   booking:"https://www.sncf-connect.com/train/trajet/saint-etienne/lyon"},
+  {id:"lyo-ste", type:"booking",
+   labelFrom:"Lyon", labelTo:"Saint-Étienne",
+   booking:"https://www.sncf-connect.com/train/trajet/lyon/saint-etienne"}
 ];
 
 let currentRoute = null;
@@ -227,20 +246,30 @@ function esc(s){
 
 function renderRouteButtons(){
   const box = document.querySelector("#routeButtons");
-  box.innerHTML = ROUTES.map(r => `
-    <button class="route-btn" data-id="${r.id}">
-      <strong>${esc(r.labelFrom)} <span class="arrow">→</span> ${esc(r.labelTo)}</strong>
-      <span>Voir tous les MAX à 0 € disponibles</span>
-      <div id="count-${r.id}" class="count loading">…</div>
-    </button>
-  `).join("") + `
+  box.innerHTML = ROUTES.map(r => {
+    if(r.type === "booking"){
+      return `
+        <a class="route-btn classic-route" href="${r.booking}" target="_blank" rel="noopener"
+           style="text-decoration:none;display:block">
+          <strong>${esc(r.labelFrom)} <span class="arrow">→</span> ${esc(r.labelTo)}</strong>
+          <span>TER / TGV INOUI · ouvrir directement la réservation SNCF</span>
+          <div class="count" style="background:#f1f2f4;color:#555">SNCF ↗</div>
+        </a>`;
+    }
+    return `
+      <button class="route-btn" data-id="${r.id}">
+        <strong>${esc(r.labelFrom)} <span class="arrow">→</span> ${esc(r.labelTo)}</strong>
+        <span>Voir tous les MAX à 0 € disponibles</span>
+        <div id="count-${r.id}" class="count loading">…</div>
+      </button>`;
+  }).join("") + `
     <button class="date-btn" id="dateModeBtn">
       <strong>📅 Recherche par date</strong>
-      <span>Voir tous les billets MAX disponibles un jour donné, tous trajets confondus</span>
+      <span>Voir tous les billets MAX disponibles un jour donné sur les trajets éligibles</span>
     </button>
   `;
 
-  box.querySelectorAll(".route-btn").forEach(b => {
+  box.querySelectorAll(".route-btn[data-id]").forEach(b => {
     b.addEventListener("click", () => openRoute(b.dataset.id));
   });
   document.querySelector("#dateModeBtn").addEventListener("click", openDateMode);
@@ -267,13 +296,17 @@ function relative(iso){
 }
 
 async function fetchAll(route){
+  if(route.type !== "max") return [];
   if(cachedRows[route.id]) return cachedRows[route.id];
 
   const rows = [];
   let offset = 0;
   const limit = 100;
+
+  // Recherche volontairement souple : les libellés SNCF peuvent varier
+  // ("PARIS (intramuros)", "ST ETIENNE CHATEAUCREUX", etc.).
   const where =
-    `od_happy_card = "OUI" AND origine = "${route.from}" AND destination = "${route.to}"`;
+    `od_happy_card = "OUI" AND search(origine, "${route.fromSearch}") AND search(destination, "${route.toSearch}")`;
 
   while(true){
     const u = new URL(API);
@@ -287,11 +320,19 @@ async function fetchAll(route){
     if(!response.ok) throw new Error("Erreur SNCF " + response.status);
     const data = await response.json();
     const batch = data.results || [];
-    rows.push(...batch);
+
+    // Double sécurité côté navigateur pour éviter les faux positifs.
+    const clean = batch.filter(x =>
+      String(x.origine || "").toUpperCase().includes(route.fromSearch) &&
+      String(x.destination || "").toUpperCase().includes(route.toSearch) &&
+      String(x.od_happy_card || "").toUpperCase() === "OUI"
+    );
+    rows.push(...clean);
 
     offset += batch.length;
     if(batch.length === 0 || offset >= Number(data.total_count || 0)) break;
   }
+
   cachedRows[route.id] = rows;
   return rows;
 }
@@ -302,7 +343,8 @@ async function updateHomeCounts(force=false){
   if(force) cachedRows = {};
 
   try{
-    const all = await Promise.all(ROUTES.map(async r => {
+    const maxRoutes = ROUTES.filter(r => r.type === "max");
+    const all = await Promise.all(maxRoutes.map(async r => {
       const rows = await fetchAll(r);
       const el = document.querySelector("#count-"+r.id);
       el.textContent = rows.length;
@@ -310,7 +352,7 @@ async function updateHomeCounts(force=false){
       return rows.length;
     }));
     const total = all.reduce((a,b)=>a+b,0);
-    status.innerHTML = `✅ <strong>${total}</strong> billets MAX à 0 € signalés disponibles au total sur les 6 trajets.`;
+    status.innerHTML = `✅ <strong>${total}</strong> billets MAX à 0 € signalés disponibles au total sur les 4 trajets MAX.`;
   }catch(e){
     status.textContent = "⚠️ Impossible de compter toutes les disponibilités pour le moment.";
   }
@@ -430,7 +472,7 @@ async function searchByDate(){
   document.querySelector("#results").innerHTML = "";
 
   try{
-    const groups = await Promise.all(ROUTES.map(async r => {
+    const groups = await Promise.all(ROUTES.filter(r => r.type === "max").map(async r => {
       const rows = await fetchAll(r);
       return rows.filter(x => x.date === date).map(x => ({...x,_route:r}));
     }));
