@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Disponibilités TGV MAX de Marion">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>TGV Max Marion</title>
+  <style>
+    :root {
+      --bg:#f4f5f7; --card:#fff; --text:#171717; --muted:#6a6d73;
+      --line:#e1e3e7; --dark:#202124; --green:#177245; --green-bg:#eaf7ef;
+      --accent:#5f2eea;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;background:var(--bg);color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    }
+    header{
+      position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);
+      border-bottom:1px solid var(--line);backdrop-filter:blur(10px);
+    }
+    .wrap{max-width:920px;margin:auto;padding:16px}
+    h1{font-size:1.45rem;margin:0}
+    .tagline{color:var(--muted);font-size:.88rem;margin-top:3px}
+    .home{padding-top:22px}
+    .intro{margin:0 0 16px;color:#41444a}
+    .routes{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px
+    }
+    .route-btn{
+      min-height:74px;border:1px solid var(--line);border-radius:16px;background:#fff;
+      padding:13px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit;
+      box-shadow:0 1px 2px rgba(0,0,0,.03);
+    }
+    .route-btn:hover{border-color:#bbb;transform:translateY(-1px)}
+    .route-btn strong{display:block;font-size:1rem}
+    .route-btn span{display:block;color:var(--muted);font-size:.78rem;margin-top:5px}
+    .route-btn .arrow{display:inline;color:var(--accent);font-weight:900;margin:0 5px}
+    .topbar{display:flex;align-items:center;gap:10px}
+    .back,.refresh{
+      border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;
+      font-weight:750;cursor:pointer
+    }
+    .route-heading{flex:1;min-width:0}
+    .route-heading strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .route-heading span{color:var(--muted);font-size:.77rem}
+    .status{
+      margin:14px 0;border:1px solid var(--line);background:#fff;border-radius:13px;
+      padding:11px 13px;font-size:.86rem
+    }
+    .summary{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+    .stat{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 13px;font-size:.79rem;color:var(--muted)}
+    .stat b{font-size:1.12rem;color:var(--text)}
+    .day{margin:19px 0 26px}
+    .day h2{font-size:1rem;margin:0 0 8px;text-transform:capitalize}
+    .train{
+      display:grid;grid-template-columns:95px 1fr auto;gap:12px;align-items:center;
+      background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px;margin:7px 0;
+    }
+    .time{font-size:1.02rem;font-weight:850}
+    .time small{display:block;color:var(--muted);font-size:.72rem;font-weight:500;margin-top:2px}
+    .info strong{font-size:.91rem}
+    .meta{font-size:.78rem;color:var(--muted);margin-top:3px}
+    .zero{
+      display:inline-block;margin-left:5px;padding:3px 7px;border-radius:999px;
+      background:var(--green-bg);color:var(--green);font-size:.69rem;font-weight:900
+    }
+    .book{
+      display:block;text-decoration:none;background:var(--dark);color:#fff;
+      border-radius:10px;padding:10px 11px;font-size:.79rem;font-weight:800;white-space:nowrap
+    }
+    .book:hover{filter:brightness(1.15)}
+    .empty{
+      border:1px dashed #c8cbd0;background:#fff;border-radius:15px;
+      padding:28px 18px;text-align:center;color:var(--muted)
+    }
+    .note{
+      margin:25px 0 50px;color:var(--muted);font-size:.76rem;line-height:1.45
+    }
+    .hidden{display:none!important}
+    @media(max-width:640px){
+      .wrap{padding:13px}
+      .routes{grid-template-columns:1fr}
+      .route-btn{min-height:66px}
+      .train{grid-template-columns:84px 1fr}
+      .book{grid-column:1/-1;text-align:center}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🚄 TGV Max Marion</h1>
+    <div class="tagline">Les billets MAX à 0 € qui sont encore signalés disponibles</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="home" class="home">
+    <p class="intro">Choisis un trajet : les places MAX disponibles apparaissent immédiatement, de la date la plus proche à la plus éloignée.</p>
+    <div class="routes" id="routeButtons"></div>
+    <p class="note">
+      Source : SNCF Open Data « tgvmax ». La SNCF actualise ce jeu de données chaque matin.
+      Une disponibilité affichée ici doit donc être confirmée au moment de la réservation dans SNCF Connect.
+    </p>
+  </section>
+
+  <section id="list" class="hidden">
+    <div class="topbar">
+      <button class="back" id="backBtn">← Trajets</button>
+      <div class="route-heading">
+        <strong id="routeTitle"></strong>
+        <span>MAX à 0 € uniquement</span>
+      </div>
+      <button class="refresh" id="refreshBtn" title="Actualiser">↻</button>
+    </div>
+
+    <div id="status" class="status">Chargement…</div>
+    <div id="summary" class="summary"></div>
+    <div id="results"></div>
+
+    <p class="note">
+      Le bouton « Réserver sur SNCF Connect » ouvre la page SNCF Connect du bon trajet.
+      SNCF Connect ne publie pas actuellement de lien web stable permettant de garantir le préremplissage
+      du numéro exact de train et de la date depuis une application externe ; le numéro, la date et l'heure
+      restent donc affichés juste au-dessus pour retrouver immédiatement le bon train.
+    </p>
+  </section>
+</main>
+
+<script>
+const API = "https://ressources.data.sncf.com/api/explore/v2.1/catalog/datasets/tgvmax/records";
+
+const ROUTES = [
+  {id:"ste-par", from:"ST ETIENNE CHATEAUCREUX", to:"PARIS (intramuros)",
+   labelFrom:"Saint-Étienne", labelTo:"Paris", booking:"https://www.sncf-connect.com/train/trajet/saint-etienne/paris"},
+  {id:"par-ste", from:"PARIS (intramuros)", to:"ST ETIENNE CHATEAUCREUX",
+   labelFrom:"Paris", labelTo:"Saint-Étienne", booking:"https://www.sncf-connect.com/train/trajet/paris/saint-etienne"},
+  {id:"lyo-par", from:"LYON (intramuros)", to:"PARIS (intramuros)",
+   labelFrom:"Lyon", labelTo:"Paris", booking:"https://www.sncf-connect.com/train/trajet/lyon/paris"},
+  {id:"par-lyo", from:"PARIS (intramuros)", to:"LYON (intramuros)",
+   labelFrom:"Paris", labelTo:"Lyon", booking:"https://www.sncf-connect.com/train/trajet/paris/lyon"},
+  {id:"ste-lyo", from:"ST ETIENNE CHATEAUCREUX", to:"LYON (intramuros)",
+   labelFrom:"Saint-Étienne", labelTo:"Lyon", booking:"https://www.sncf-connect.com/train/trajet/saint-etienne/lyon"},
+  {id:"lyo-ste", from:"LYON (intramuros)", to:"ST ETIENNE CHATEAUCREUX",
+   labelFrom:"Lyon", labelTo:"Saint-Étienne", booking:"https://www.sncf-connect.com/train/trajet/lyon/saint-etienne"}
+];
+
+let currentRoute = null;
+let requestToken = 0;
+
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function renderRouteButtons(){
+  const box = document.querySelector("#routeButtons");
+  box.innerHTML = ROUTES.map(r => `
+    <button class="route-btn" data-id="${r.id}">
+      <strong>${esc(r.labelFrom)} <span class="arrow">→</span> ${esc(r.labelTo)}</strong>
+      <span>Voir tous les MAX à 0 € disponibles</span>
+    </button>
+  `).join("");
+  box.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => openRoute(b.dataset.id));
+  });
+}
+
+function formatDate(iso){
+  const d = new Date(iso + "T12:00:00");
+  return new Intl.DateTimeFormat("fr-FR", {
+    weekday:"long", day:"numeric", month:"long", year:"numeric"
+  }).format(d);
+}
+
+function daysFromToday(iso){
+  const a = new Date(); a.setHours(0,0,0,0);
+  const b = new Date(iso+"T00:00:00");
+  return Math.round((b-a)/86400000);
+}
+
+function relative(iso){
+  const n = daysFromToday(iso);
+  if(n===0) return " — aujourd’hui";
+  if(n===1) return " — demain";
+  return "";
+}
+
+async function fetchAll(route){
+  const rows = [];
+  let offset = 0;
+  const limit = 100;
+  const where =
+    `od_happy_card = "OUI" AND origine = "${route.from}" AND destination = "${route.to}"`;
+
+  while(true){
+    const u = new URL(API);
+    u.searchParams.set("select","date,train_no,origine,destination,heure_depart,heure_arrivee,od_happy_card");
+    u.searchParams.set("where",where);
+    u.searchParams.set("order_by","date,heure_depart");
+    u.searchParams.set("limit",String(limit));
+    u.searchParams.set("offset",String(offset));
+
+    const response = await fetch(u.toString(), {cache:"no-store"});
+    if(!response.ok) throw new Error("Erreur SNCF " + response.status);
+    const data = await response.json();
+    const batch = data.results || [];
+    rows.push(...batch);
+
+    offset += batch.length;
+    if(batch.length === 0 || offset >= Number(data.total_count || 0)) break;
+  }
+  return rows;
+}
+
+function renderResults(route, rows){
+  rows.sort((a,b) => (a.date+a.heure_depart).localeCompare(b.date+b.heure_depart));
+
+  const dates = [...new Set(rows.map(x=>x.date))];
+  document.querySelector("#summary").innerHTML = `
+    <div class="stat"><b>${rows.length}</b><br>train${rows.length>1?"s":""} MAX disponible${rows.length>1?"s":""}</div>
+    <div class="stat"><b>${dates.length}</b><br>jour${dates.length>1?"s":""} avec une place</div>
+  `;
+
+  const root = document.querySelector("#results");
+  if(!rows.length){
+    root.innerHTML = `<div class="empty">Aucun billet MAX à 0 € n'est signalé disponible actuellement sur ce trajet.</div>`;
+    return;
+  }
+
+  const groups = {};
+  rows.forEach(r => (groups[r.date] ||= []).push(r));
+
+  let html = "";
+  Object.keys(groups).sort().forEach(date => {
+    html += `<section class="day"><h2>${esc(formatDate(date))}${relative(date)}</h2>`;
+    groups[date]
+      .sort((a,b)=>(a.heure_depart||"").localeCompare(b.heure_depart||""))
+      .forEach(t => {
+        html += `
+          <article class="train">
+            <div class="time">
+              ${esc(t.heure_depart || "—")} → ${esc(t.heure_arrivee || "—")}
+              <small>${esc(date)}</small>
+            </div>
+            <div class="info">
+              <strong>TGV n° ${esc(t.train_no || "—")} <span class="zero">MAX 0 €</span></strong>
+              <div class="meta">${esc(route.labelFrom)} → ${esc(route.labelTo)}</div>
+            </div>
+            <a class="book" href="${route.booking}" target="_blank" rel="noopener">
+              Réserver sur SNCF Connect ↗
+            </a>
+          </article>`;
+      });
+    html += `</section>`;
+  });
+  root.innerHTML = html;
+}
+
+async function loadRoute(){
+  const token = ++requestToken;
+  const status = document.querySelector("#status");
+  const summary = document.querySelector("#summary");
+  const results = document.querySelector("#results");
+
+  status.classList.remove("hidden");
+  status.textContent = "Recherche des disponibilités MAX…";
+  summary.innerHTML = "";
+  results.innerHTML = "";
+
+  try{
+    const rows = await fetchAll(currentRoute);
+    if(token !== requestToken) return;
+    const now = new Date();
+    status.innerHTML =
+      `✅ Données SNCF consultées le <strong>${now.toLocaleDateString("fr-FR")}</strong> à ` +
+      `<strong>${now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</strong>.`;
+    renderResults(currentRoute, rows);
+  }catch(err){
+    if(token !== requestToken) return;
+    status.innerHTML = `⚠️ Impossible de charger les données SNCF pour le moment.`;
+    results.innerHTML = `<div class="empty">${esc(err.message)}</div>`;
+  }
+}
+
+function openRoute(id){
+  currentRoute = ROUTES.find(r => r.id === id);
+  if(!currentRoute) return;
+  document.querySelector("#home").classList.add("hidden");
+  document.querySelector("#list").classList.remove("hidden");
+  document.querySelector("#routeTitle").textContent =
+    `${currentRoute.labelFrom} → ${currentRoute.labelTo}`;
+  history.replaceState(null,"","#"+id);
+  loadRoute();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function goHome(){
+  ++requestToken;
+  currentRoute = null;
+  document.querySelector("#list").classList.add("hidden");
+  document.querySelector("#home").classList.remove("hidden");
+  history.replaceState(null,"",location.pathname);
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+document.querySelector("#backBtn").addEventListener("click", goHome);
+document.querySelector("#refreshBtn").addEventListener("click", ()=>currentRoute && loadRoute());
+
+renderRouteButtons();
+const initial = location.hash.replace("#","");
+if(ROUTES.some(r=>r.id===initial)) openRoute(initial);
+
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("service-worker.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
