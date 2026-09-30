@@ -155,6 +155,13 @@
       transform:translateY(-1px);
     }
 
+  
+    #copyToast{
+      position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+      z-index:1000;background:rgba(32,33,36,.96);color:#fff;
+      padding:10px 14px;border-radius:999px;font-size:.82rem;font-weight:750;
+      box-shadow:0 6px 24px rgba(0,0,0,.22);max-width:92vw;text-align:center;
+    }
   </style>
 </head>
 <body>
@@ -199,8 +206,9 @@
     <div id="results"></div>
 
     <p class="note">
-      Le bouton « Réserver sur SNCF Connect » ouvre la page SNCF Connect du bon trajet.
-      Le numéro, la date et l'heure sont affichés pour retrouver immédiatement le bon train.
+      Le bouton de chaque billet indique directement le numéro du TGV et son heure de départ.
+      Au clic, le trajet, la date, l'heure et le numéro du train sont copiés automatiquement,
+      puis SNCF Connect s'ouvre sur la bonne relation.
     </p>
   </section>
 </main>
@@ -358,6 +366,29 @@ async function updateHomeCounts(force=false){
   }
 }
 
+
+async function reserveExactTrain(routeId, date, departure, arrival, trainNo){
+  const route = ROUTES.find(r => r.id === routeId);
+  if(!route) return;
+
+  const info =
+    `TGV ${trainNo} · ${date} · ${departure} → ${arrival} · ` +
+    `${route.labelFrom} → ${route.labelTo}`;
+
+  try {
+    await navigator.clipboard.writeText(info);
+  } catch(e) {}
+
+  const toast = document.querySelector("#copyToast");
+  if(toast){
+    toast.textContent = `${info} — informations copiées`;
+    toast.classList.remove("hidden");
+    setTimeout(() => toast.classList.add("hidden"), 3200);
+  }
+
+  window.open(route.booking, "_blank", "noopener");
+}
+
 function renderResults(route, rows, titleOverride=null){
   rows.sort((a,b) => (a.date+a.heure_depart).localeCompare(b.date+b.heure_depart));
 
@@ -393,9 +424,11 @@ function renderResults(route, rows, titleOverride=null){
               <strong>TGV n° ${esc(t.train_no || "—")} <span class="zero">MAX 0 €</span></strong>
               <div class="meta">${esc(routeForRow.labelFrom)} → ${esc(routeForRow.labelTo)}</div>
             </div>
-            <a class="book" href="${routeForRow.booking}" target="_blank" rel="noopener">
-              Réserver sur SNCF Connect ↗
-            </a>
+            <button class="book"
+              style="border:0;cursor:pointer"
+              onclick="reserveExactTrain('${routeForRow.id}','${esc(date)}','${esc(t.heure_depart || "—")}','${esc(t.heure_arrivee || "—")}','${esc(t.train_no || "—")}')">
+              Réserver TGV ${esc(t.train_no || "—")} · ${esc(t.heure_depart || "—")} ↗
+            </button>
           </article>`;
       });
     html += `</section>`;
@@ -523,5 +556,6 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
   navigator.serviceWorker.register("service-worker.js").catch(()=>{});
 }
 </script>
+<div id="copyToast" class="hidden"></div>
 </body>
 </html>

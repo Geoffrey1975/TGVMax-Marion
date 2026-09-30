@@ -1,4 +1,4 @@
-const CACHE = "tgv-max-marion-v4b";
+const CACHE = "tgv-max-marion-v4c";
 const STATIC = ["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./fond-violon-portrait.jpg","./fond-violon-paysage.jpg"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));
