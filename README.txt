@@ -1,17 +1,12 @@
-TGV Max Marion — v5
+TGV Max Marion — v4b
 
-Nouveautés :
-- Pour chaque train MAX disponible :
-  * bouton « Réserver avec MAX JEUNE » vers l’espace officiel MAX JEUNE SNCF Connect ;
-  * bouton « Alerte / Réservation auto MAX » vers la page SNCF décrivant ces deux outils.
-- Les trains MAX restent affichés avec date, horaires et numéro exact.
-- Saint-Étienne ↔ Lyon reste en réservation SNCF classique (TER / TGV selon offre).
-- Fond violon responsive conservé.
+Base : version 4.
 
-Limite SNCF :
-SNCF Connect ne fournit pas de lien public stable permettant à un site externe de préremplir
-simultanément profil MAX JEUNE + trajet + date + numéro de train. La réservation finale doit
-donc être confirmée dans SNCF Connect avec le profil MAX enregistré.
+Amélioration :
+- chaque disponibilité MAX affiche maintenant un bouton du type :
+  « Réserver TGV 6687 · 17:00 »
+- au clic, trajet + date + heure + numéro du train sont copiés dans le presse-papiers ;
+- SNCF Connect s'ouvre ensuite sur la bonne relation ;
+- un petit message confirme les informations copiées.
 
-Mise à jour GitHub Pages :
-remplacer tous les fichiers du dépôt par ceux de cette archive puis Commit changes.
+Les boutons Saint-Étienne ↔ Lyon restent des raccourcis de réservation SNCF classiques.
