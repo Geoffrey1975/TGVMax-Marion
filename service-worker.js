@@ -1,5 +1,5 @@
-const CACHE = "tgv-max-marion-v1";
-const STATIC = ["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png"];
+const CACHE = "tgv-max-marion-v3";
+const STATIC = ["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./fond-violon-portrait.jpg","./fond-violon-paysage.jpg"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));
   self.skipWaiting();
@@ -10,6 +10,6 @@ self.addEventListener("activate", e => {
 });
 self.addEventListener("fetch", e => {
   const u = new URL(e.request.url);
-  if(u.hostname === "ressources.data.sncf.com") return; // toujours réseau pour les données SNCF
+  if(u.hostname === "ressources.data.sncf.com") return;
   e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
 });

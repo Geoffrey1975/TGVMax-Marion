@@ -1,32 +1,16 @@
-TGV Max Marion
-==============
+TGV Max Marion — v3
 
-Application web installable (PWA) qui affiche uniquement les disponibilités MAX à 0 € signalées par SNCF Open Data.
+Nouveautés :
+- fond musical avec violon intégré ;
+- cadrage portrait dédié aux téléphones ;
+- cadrage paysage dédié aux ordinateurs/tablettes en paysage ;
+- image en mode cover : elle remplit l'écran sans être déformée ;
+- voile clair et cartes semi-transparentes pour conserver une excellente lisibilité ;
+- conserve les compteurs de billets et la recherche par date de la v2.
 
-Trajets inclus
---------------
-- Saint-Étienne → Paris
-- Paris → Saint-Étienne
-- Lyon → Paris
-- Paris → Lyon
-- Saint-Étienne → Lyon
-- Lyon → Saint-Étienne
-
-Utilisation
------------
-1. Héberger le contenu du dossier sur un hébergement HTTPS (GitHub Pages, Netlify, Cloudflare Pages, etc.).
-2. Ouvrir le site sur Android/Chrome.
-3. Menu du navigateur > "Installer l'application" ou "Ajouter à l'écran d'accueil".
-4. L'application s'ouvrira ensuite comme une petite appli autonome.
-
-Données
--------
-Source : https://ressources.data.sncf.com/explore/dataset/tgvmax/
-Le jeu est actualisé chaque matin par SNCF, et non en temps réel à la seconde.
-Chaque ouverture/actualisation interroge la version la plus récente de l'API.
-
-Réservation
------------
-Chaque résultat contient un bouton vers la page SNCF Connect du trajet concerné.
-SNCF Connect ne fournit pas actuellement de lien web public stable garantissant le
-préremplissage du train précis (numéro + date + heure) à partir d'un site externe.
+Mise à jour GitHub Pages :
+1. Remplacer les anciens fichiers par tous ceux contenus dans cette archive.
+2. Vérifier que les deux images de fond sont bien à la racine du dépôt.
+3. Commit changes.
+4. Recharger ensuite la page ; si l'ancienne version reste affichée, fermer/réouvrir l'appli
+   ou vider le cache du site afin que le nouveau service worker v3 prenne effet.

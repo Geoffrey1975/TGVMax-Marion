@@ -13,15 +13,20 @@
     :root {
       --bg:#f4f5f7; --card:#fff; --text:#171717; --muted:#6a6d73;
       --line:#e1e3e7; --dark:#202124; --green:#177245; --green-bg:#eaf7ef;
-      --accent:#5f2eea;
+      --accent:#5f2eea; --accent-soft:#f0ebff;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;background:var(--bg);color:var(--text);
+      margin:0;
+      color:var(--text);
       font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      min-height:100vh;
+      background:
+        linear-gradient(rgba(244,245,247,.80), rgba(244,245,247,.88)),
+        url("fond-violon-portrait.jpg") center 42% / cover fixed no-repeat;
     }
     header{
-      position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);
+      position:sticky;top:0;z-index:50;background:rgba(255,255,255,.88);
       border-bottom:1px solid var(--line);backdrop-filter:blur(10px);
     }
     .wrap{max-width:920px;margin:auto;padding:16px}
@@ -32,35 +37,59 @@
     .routes{
       display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px
     }
-    .route-btn{
-      min-height:74px;border:1px solid var(--line);border-radius:16px;background:#fff;
+    .route-btn,.date-btn{
+      min-height:82px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.92);
       padding:13px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit;
       box-shadow:0 1px 2px rgba(0,0,0,.03);
+      position:relative;
     }
-    .route-btn:hover{border-color:#bbb;transform:translateY(-1px)}
-    .route-btn strong{display:block;font-size:1rem}
-    .route-btn span{display:block;color:var(--muted);font-size:.78rem;margin-top:5px}
-    .route-btn .arrow{display:inline;color:var(--accent);font-weight:900;margin:0 5px}
+    .route-btn:hover,.date-btn:hover{border-color:#bbb;transform:translateY(-1px)}
+    .route-btn strong,.date-btn strong{display:block;font-size:1rem;padding-right:76px}
+    .route-btn span,.date-btn span{display:block;color:var(--muted);font-size:.78rem;margin-top:5px}
+    .arrow{display:inline;color:var(--accent);font-weight:900;margin:0 5px}
+    .count{
+      position:absolute;right:12px;top:12px;min-width:50px;text-align:center;
+      padding:6px 8px;border-radius:999px;background:var(--green-bg);color:var(--green);
+      font-weight:900;font-size:.78rem;
+    }
+    .count.loading{background:#f1f2f4;color:#777}
+    .date-btn{grid-column:1/-1;background:var(--accent-soft);border-color:#ddd3ff}
+    .date-btn strong{padding-right:0}
+    .home-status{
+      margin:14px 0 0;border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:13px;
+      padding:10px 12px;font-size:.82rem;color:var(--muted)
+    }
     .topbar{display:flex;align-items:center;gap:10px}
     .back,.refresh{
-      border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;
+      border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:999px;padding:9px 12px;
       font-weight:750;cursor:pointer
     }
     .route-heading{flex:1;min-width:0}
     .route-heading strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .route-heading span{color:var(--muted);font-size:.77rem}
     .status{
-      margin:14px 0;border:1px solid var(--line);background:#fff;border-radius:13px;
+      margin:14px 0;border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:13px;
       padding:11px 13px;font-size:.86rem
     }
     .summary{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
-    .stat{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 13px;font-size:.79rem;color:var(--muted)}
+    .stat{border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:12px;padding:10px 13px;font-size:.79rem;color:var(--muted)}
     .stat b{font-size:1.12rem;color:var(--text)}
+    .date-search-box{
+      background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:15px;padding:14px;margin:14px 0
+    }
+    .date-search-box label{font-weight:750;font-size:.9rem;display:block;margin-bottom:8px}
+    .date-search-row{display:flex;gap:8px;flex-wrap:wrap}
+    input[type=date]{
+      border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;background:#fff
+    }
+    .search-date{
+      border:0;background:var(--dark);color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer
+    }
     .day{margin:19px 0 26px}
     .day h2{font-size:1rem;margin:0 0 8px;text-transform:capitalize}
     .train{
       display:grid;grid-template-columns:95px 1fr auto;gap:12px;align-items:center;
-      background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px;margin:7px 0;
+      background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:15px;padding:13px;margin:7px 0;
     }
     .time{font-size:1.02rem;font-weight:850}
     .time small{display:block;color:var(--muted);font-size:.72rem;font-weight:500;margin-top:2px}
@@ -76,7 +105,7 @@
     }
     .book:hover{filter:brightness(1.15)}
     .empty{
-      border:1px dashed #c8cbd0;background:#fff;border-radius:15px;
+      border:1px dashed #c8cbd0;background:rgba(255,255,255,.92);border-radius:15px;
       padding:28px 18px;text-align:center;color:var(--muted)
     }
     .note{
@@ -86,10 +115,37 @@
     @media(max-width:640px){
       .wrap{padding:13px}
       .routes{grid-template-columns:1fr}
-      .route-btn{min-height:66px}
+      .date-btn{grid-column:auto}
+      .route-btn{min-height:72px}
       .train{grid-template-columns:84px 1fr}
       .book{grid-column:1/-1;text-align:center}
     }
+  
+    .route-btn,.date-btn,.status,.stat,.train,.date-search-box,.home-status,.empty{
+      backdrop-filter:blur(7px);
+      -webkit-backdrop-filter:blur(7px);
+      box-shadow:0 4px 18px rgba(0,0,0,.06);
+    }
+
+    /* Paysage / ordinateur : même image, recadrée horizontalement et légèrement zoomée */
+    @media (min-width: 760px) and (orientation: landscape){
+      body{
+        background:
+          linear-gradient(rgba(244,245,247,.78), rgba(244,245,247,.86)),
+          url("fond-violon-paysage.jpg") center 48% / cover fixed no-repeat;
+      }
+      .wrap{max-width:1000px}
+    }
+
+    /* Petit téléphone : on garde bien les cordes et le corps du violon visibles */
+    @media (max-width: 759px){
+      body{
+        background:
+          linear-gradient(rgba(244,245,247,.82), rgba(244,245,247,.90)),
+          url("fond-violon-portrait.jpg") 58% center / cover fixed no-repeat;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -104,6 +160,7 @@
   <section id="home" class="home">
     <p class="intro">Choisis un trajet : les places MAX disponibles apparaissent immédiatement, de la date la plus proche à la plus éloignée.</p>
     <div class="routes" id="routeButtons"></div>
+    <div id="homeStatus" class="home-status">Comptage des disponibilités en cours…</div>
     <p class="note">
       Source : SNCF Open Data « tgvmax ». La SNCF actualise ce jeu de données chaque matin.
       Une disponibilité affichée ici doit donc être confirmée au moment de la réservation dans SNCF Connect.
@@ -115,9 +172,17 @@
       <button class="back" id="backBtn">← Trajets</button>
       <div class="route-heading">
         <strong id="routeTitle"></strong>
-        <span>MAX à 0 € uniquement</span>
+        <span id="routeSubtitle">MAX à 0 € uniquement</span>
       </div>
       <button class="refresh" id="refreshBtn" title="Actualiser">↻</button>
+    </div>
+
+    <div id="dateSearchBox" class="date-search-box hidden">
+      <label for="dateInput">Choisir une date</label>
+      <div class="date-search-row">
+        <input id="dateInput" type="date">
+        <button id="dateSearchBtn" class="search-date">Afficher les billets MAX</button>
+      </div>
     </div>
 
     <div id="status" class="status">Chargement…</div>
@@ -126,9 +191,7 @@
 
     <p class="note">
       Le bouton « Réserver sur SNCF Connect » ouvre la page SNCF Connect du bon trajet.
-      SNCF Connect ne publie pas actuellement de lien web stable permettant de garantir le préremplissage
-      du numéro exact de train et de la date depuis une application externe ; le numéro, la date et l'heure
-      restent donc affichés juste au-dessus pour retrouver immédiatement le bon train.
+      Le numéro, la date et l'heure sont affichés pour retrouver immédiatement le bon train.
     </p>
   </section>
 </main>
@@ -153,6 +216,8 @@ const ROUTES = [
 
 let currentRoute = null;
 let requestToken = 0;
+let cachedRows = {};
+let dateMode = false;
 
 function esc(s){
   return String(s ?? "").replace(/[&<>"']/g, c => ({
@@ -166,11 +231,19 @@ function renderRouteButtons(){
     <button class="route-btn" data-id="${r.id}">
       <strong>${esc(r.labelFrom)} <span class="arrow">→</span> ${esc(r.labelTo)}</strong>
       <span>Voir tous les MAX à 0 € disponibles</span>
+      <div id="count-${r.id}" class="count loading">…</div>
     </button>
-  `).join("");
-  box.querySelectorAll("button").forEach(b => {
+  `).join("") + `
+    <button class="date-btn" id="dateModeBtn">
+      <strong>📅 Recherche par date</strong>
+      <span>Voir tous les billets MAX disponibles un jour donné, tous trajets confondus</span>
+    </button>
+  `;
+
+  box.querySelectorAll(".route-btn").forEach(b => {
     b.addEventListener("click", () => openRoute(b.dataset.id));
   });
+  document.querySelector("#dateModeBtn").addEventListener("click", openDateMode);
 }
 
 function formatDate(iso){
@@ -194,6 +267,8 @@ function relative(iso){
 }
 
 async function fetchAll(route){
+  if(cachedRows[route.id]) return cachedRows[route.id];
+
   const rows = [];
   let offset = 0;
   const limit = 100;
@@ -217,21 +292,42 @@ async function fetchAll(route){
     offset += batch.length;
     if(batch.length === 0 || offset >= Number(data.total_count || 0)) break;
   }
+  cachedRows[route.id] = rows;
   return rows;
 }
 
-function renderResults(route, rows){
+async function updateHomeCounts(force=false){
+  const status = document.querySelector("#homeStatus");
+  status.textContent = "Comptage des disponibilités en cours…";
+  if(force) cachedRows = {};
+
+  try{
+    const all = await Promise.all(ROUTES.map(async r => {
+      const rows = await fetchAll(r);
+      const el = document.querySelector("#count-"+r.id);
+      el.textContent = rows.length;
+      el.classList.remove("loading");
+      return rows.length;
+    }));
+    const total = all.reduce((a,b)=>a+b,0);
+    status.innerHTML = `✅ <strong>${total}</strong> billets MAX à 0 € signalés disponibles au total sur les 6 trajets.`;
+  }catch(e){
+    status.textContent = "⚠️ Impossible de compter toutes les disponibilités pour le moment.";
+  }
+}
+
+function renderResults(route, rows, titleOverride=null){
   rows.sort((a,b) => (a.date+a.heure_depart).localeCompare(b.date+b.heure_depart));
 
   const dates = [...new Set(rows.map(x=>x.date))];
   document.querySelector("#summary").innerHTML = `
-    <div class="stat"><b>${rows.length}</b><br>train${rows.length>1?"s":""} MAX disponible${rows.length>1?"s":""}</div>
+    <div class="stat"><b>${rows.length}</b><br>billet${rows.length>1?"s":""} MAX disponible${rows.length>1?"s":""}</div>
     <div class="stat"><b>${dates.length}</b><br>jour${dates.length>1?"s":""} avec une place</div>
   `;
 
   const root = document.querySelector("#results");
   if(!rows.length){
-    root.innerHTML = `<div class="empty">Aucun billet MAX à 0 € n'est signalé disponible actuellement sur ce trajet.</div>`;
+    root.innerHTML = `<div class="empty">Aucun billet MAX à 0 € n'est signalé disponible pour cette sélection.</div>`;
     return;
   }
 
@@ -244,6 +340,7 @@ function renderResults(route, rows){
     groups[date]
       .sort((a,b)=>(a.heure_depart||"").localeCompare(b.heure_depart||""))
       .forEach(t => {
+        const routeForRow = t._route || route;
         html += `
           <article class="train">
             <div class="time">
@@ -252,9 +349,9 @@ function renderResults(route, rows){
             </div>
             <div class="info">
               <strong>TGV n° ${esc(t.train_no || "—")} <span class="zero">MAX 0 €</span></strong>
-              <div class="meta">${esc(route.labelFrom)} → ${esc(route.labelTo)}</div>
+              <div class="meta">${esc(routeForRow.labelFrom)} → ${esc(routeForRow.labelTo)}</div>
             </div>
-            <a class="book" href="${route.booking}" target="_blank" rel="noopener">
+            <a class="book" href="${routeForRow.booking}" target="_blank" rel="noopener">
               Réserver sur SNCF Connect ↗
             </a>
           </article>`;
@@ -291,20 +388,67 @@ async function loadRoute(){
 }
 
 function openRoute(id){
+  dateMode = false;
   currentRoute = ROUTES.find(r => r.id === id);
   if(!currentRoute) return;
   document.querySelector("#home").classList.add("hidden");
   document.querySelector("#list").classList.remove("hidden");
+  document.querySelector("#dateSearchBox").classList.add("hidden");
   document.querySelector("#routeTitle").textContent =
     `${currentRoute.labelFrom} → ${currentRoute.labelTo}`;
+  document.querySelector("#routeSubtitle").textContent = "MAX à 0 € uniquement · tri chronologique";
   history.replaceState(null,"","#"+id);
   loadRoute();
   window.scrollTo({top:0,behavior:"instant"});
 }
 
+function openDateMode(){
+  dateMode = true;
+  currentRoute = null;
+  document.querySelector("#home").classList.add("hidden");
+  document.querySelector("#list").classList.remove("hidden");
+  document.querySelector("#dateSearchBox").classList.remove("hidden");
+  document.querySelector("#routeTitle").textContent = "Recherche par date";
+  document.querySelector("#routeSubtitle").textContent = "Tous les trajets · MAX à 0 €";
+  document.querySelector("#status").textContent = "Choisis une date pour afficher les billets disponibles.";
+  document.querySelector("#summary").innerHTML = "";
+  document.querySelector("#results").innerHTML = "";
+  history.replaceState(null,"","#date");
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+async function searchByDate(){
+  const date = document.querySelector("#dateInput").value;
+  if(!date){
+    document.querySelector("#status").textContent = "Choisis d’abord une date.";
+    return;
+  }
+
+  const token = ++requestToken;
+  document.querySelector("#status").textContent = "Recherche des disponibilités MAX pour cette date…";
+  document.querySelector("#summary").innerHTML = "";
+  document.querySelector("#results").innerHTML = "";
+
+  try{
+    const groups = await Promise.all(ROUTES.map(async r => {
+      const rows = await fetchAll(r);
+      return rows.filter(x => x.date === date).map(x => ({...x,_route:r}));
+    }));
+    if(token !== requestToken) return;
+    const rows = groups.flat().sort((a,b)=>(a.heure_depart||"").localeCompare(b.heure_depart||""));
+    document.querySelector("#status").innerHTML =
+      `✅ Disponibilités MAX pour le <strong>${esc(formatDate(date))}</strong>.`;
+    renderResults(null, rows);
+  }catch(err){
+    if(token !== requestToken) return;
+    document.querySelector("#status").textContent = "⚠️ Impossible de charger les données SNCF.";
+  }
+}
+
 function goHome(){
   ++requestToken;
   currentRoute = null;
+  dateMode = false;
   document.querySelector("#list").classList.add("hidden");
   document.querySelector("#home").classList.remove("hidden");
   history.replaceState(null,"",location.pathname);
@@ -312,11 +456,26 @@ function goHome(){
 }
 
 document.querySelector("#backBtn").addEventListener("click", goHome);
-document.querySelector("#refreshBtn").addEventListener("click", ()=>currentRoute && loadRoute());
+document.querySelector("#refreshBtn").addEventListener("click", ()=>{
+  cachedRows = {};
+  if(dateMode){
+    updateHomeCounts(true);
+    searchByDate();
+  }else if(currentRoute){
+    loadRoute();
+  }
+});
+document.querySelector("#dateSearchBtn").addEventListener("click", searchByDate);
 
 renderRouteButtons();
+const today = new Date();
+document.querySelector("#dateInput").min = today.toISOString().slice(0,10);
+
+updateHomeCounts();
+
 const initial = location.hash.replace("#","");
-if(ROUTES.some(r=>r.id===initial)) openRoute(initial);
+if(initial === "date") openDateMode();
+else if(ROUTES.some(r=>r.id===initial)) openRoute(initial);
 
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
   navigator.serviceWorker.register("service-worker.js").catch(()=>{});
