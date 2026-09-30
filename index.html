@@ -250,6 +250,34 @@
       }
     }
 
+  
+    /* Compteurs plus lisibles, surtout sur smartphone */
+    .count{
+      background:linear-gradient(135deg,#f7f8fa,#e8edf3) !important;
+      color:#111 !important;
+      border:2px solid rgba(17,17,17,.12) !important;
+      box-shadow:0 6px 16px rgba(0,0,0,.14) !important;
+      font-weight:950 !important;
+      text-shadow:none !important;
+      min-width:58px;
+      padding:7px 10px;
+    }
+
+    .count.loading{
+      background:rgba(255,255,255,.88) !important;
+      color:#555 !important;
+    }
+
+    @media(max-width:640px){
+      .count{
+        min-width:64px;
+        padding:8px 12px;
+        font-size:.9rem !important;
+        right:14px;
+        top:14px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -515,7 +543,7 @@ function renderResults(route, rows, titleOverride=null){
             <button class="book"
               style="border:0;cursor:pointer"
               onclick="reserveExactTrain('${routeForRow.id}','${esc(date)}','${esc(t.heure_depart || "—")}','${esc(t.heure_arrivee || "—")}','${esc(t.train_no || "—")}')">
-              Réserver TGV ${esc(t.train_no || "—")} · ${esc(t.heure_depart || "—")} ✨
+              Réserver TGV ${esc(t.train_no || "—")} · ${esc(t.heure_depart || "—")}
             </button>
           </article>`;
       });
